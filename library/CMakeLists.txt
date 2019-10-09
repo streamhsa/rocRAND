@@ -1,8 +1,5 @@
 # rocRAND library
 
-set( lib_SOVERSION 1.1 )
-set( hiprand_SOVERSION ${lib_SOVERSION} )
-set( rocrand_SOVERSION ${lib_SOVERSION} )
 
 # Get sources
 file(GLOB tmp ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
@@ -79,12 +76,14 @@ target_include_directories(rocrand
         $<INSTALL_INTERFACE:rocrand/include>
 )
 
-rocm_set_soversion(rocrand ${rocrand_SOVERSION})
 set_target_properties(rocrand
     PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/library"
         DEBUG_POSTFIX "-d"
 )
+set_target_properties(rocrand PROPERTIES SOVERSION ${LIB_VERSION_MAJOR} )
+set_target_properties(rocrand PROPERTIES VERSION ${LIB_VERSION_STRING} )
+
 # Set AMD targets
 if(HIP_PLATFORM STREQUAL "hcc")
     foreach(amdgpu_target ${AMDGPU_TARGETS})
@@ -182,13 +181,16 @@ else()
     endforeach()
 endif()
   
-rocm_set_soversion(hiprand ${hiprand_SOVERSION})
+set ( CMAKE_SHARED_LINKER_FLAGS "-Wl,--rpath,$ENV{ROCM_RPATH}" )
+
 set_target_properties(hiprand
     PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/library"
         DEBUG_POSTFIX "-d"
         INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/rocrand/lib"
 )
+set_target_properties(hiprand PROPERTIES SOVERSION ${LIB_VERSION_MAJOR} )
+set_target_properties(hiprand PROPERTIES VERSION ${LIB_VERSION_STRING} )
 
 # Install
 # .so library
@@ -273,6 +275,7 @@ package_set_postinst_prerm(
     "hiprand;rocrand"
     "${CMAKE_INSTALL_PREFIX}/hiprand/lib;${CMAKE_INSTALL_PREFIX}/rocrand/lib"
     "${CMAKE_INSTALL_PREFIX}/hiprand/include;${CMAKE_INSTALL_PREFIX}/rocrand/include"
+    "/opt/rocm/hiprand/lib;/opt/rocm/rocrand/lib"
 )
 
 # Include CPack to introduce the appropriate targets

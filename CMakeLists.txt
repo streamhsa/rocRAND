@@ -71,6 +71,16 @@ set ( VERSION_STRING "2.7.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 set ( rocrand_VERSION ${rocRAND_VERSION} )
 set ( hiprand_VERSION ${rocRAND_VERSION} )
+
+set( LIB_VERSION_MAJOR 0 )
+set( LIB_VERSION_MINOR 1 )
+if (DEFINED ENV{ROCM_LIBPATCH_VERSION})
+set (LIB_VERSION_PATCH $ENV{ROCM_LIBPATCH_VERSION})
+else ()
+set (LIB_VERSION_PATCH 0)
+endif()
+
+set (LIB_VERSION_STRING "${LIB_VERSION_MAJOR}.${LIB_VERSION_MINOR}.${LIB_VERSION_PATCH}")
 # Old-style version number used within the library's API. rocrand_get_version should be modified.
 math(EXPR temp "${rocRAND_VERSION_MAJOR} * 100000 + ${rocRAND_VERSION_MINOR} * 100 + ${rocRAND_VERSION_PATCH}")
 set(hiprand_VERSION_NUMBER ${temp})
